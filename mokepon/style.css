@@ -1,0 +1,135 @@
+@import url('https://fonts.googleapis.com/css2?family=Kanit&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Kanit&family=Poppins:wght@200&display=swap');
+
+body{
+    background-color: rgb(11, 35, 56);
+    font-family: Poppins;
+    color: azure;
+}
+
+#seleccionar-mascota{
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+input{
+    display: none;
+}
+
+input:hover + div{
+    background-color: #4F709C;
+}
+
+input:checked + div{
+    background-color: #213555;
+}
+
+.btn-ataque:hover {
+    background-color: #4F709C;
+}
+
+h1{
+    text-align: center;
+    font-family: Kanit;
+}
+
+
+.tarjetas{
+    display: flex;
+    gap: 20px;
+}
+
+.boxMascotas{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* width: 200px;
+    height: 230px; */
+    text-align: center;
+    padding: 30px;
+    border: 1px solid;
+    border-radius: 10px;
+    box-sizing: content-box;
+    background-color: rgb(10, 98, 170);
+}
+
+.boxMascotas img{
+    width: 100px;
+    height: 100px;
+}
+
+button{
+    font-family: Kanit;
+    color: azure;
+    width: 300px;
+    height: 50px;
+    background-color: rgb(11, 35, 56);
+    margin-top: 20px;
+    border: 2px solid azure;
+    border-radius: 10px;
+}
+
+#botones-ataque{
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    
+}
+
+.btn-ataque{
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+#seleccionar-ataque{
+    flex-direction: column;
+    align-items: center;
+}
+
+#final {
+    display: flex;
+    justify-content: center;
+    width: 300px;
+    height: 100px;
+    margin-top: 20px;
+    border-radius: 10px;
+    background-color: azure;
+    color: rgb(11, 35, 56);
+}
+
+.resumen{
+    width: 60vh;
+    margin-top: 20px;
+    padding: 5px;
+    gap: 20px;
+    display: grid;
+    grid-template-columns: 50% 50%;
+}
+
+.res{
+    display: grid;
+    justify-self: center;
+    background-color: rgb(10, 98, 170);
+    width: 200px;
+    border: 1px solid;
+    border-radius: 10px;
+    text-align: center;
+}
+
+@media(max-width: 480px){
+    .tarjetas, #parrafo-botones{
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .resumen{
+        width: 40vh;
+    }
+
+    .res{
+        width: 120px;
+    }
+}
