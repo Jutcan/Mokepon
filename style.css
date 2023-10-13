@@ -64,7 +64,7 @@ h1{
 button{
     font-family: Kanit;
     color: azure;
-    width: 300px;
+    width: 100px;
     height: 50px;
     background-color: rgb(11, 35, 56);
     margin-top: 20px;
@@ -98,6 +98,12 @@ button{
     border-radius: 10px;
     background-color: azure;
     color: rgb(11, 35, 56);
+}
+
+#reiniciar{
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .resumen{

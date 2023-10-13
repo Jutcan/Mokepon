@@ -12,6 +12,8 @@ const mensajesResultado = document.getElementById("mensajesResultado")
 const spanvidaMascotaJugador = document.getElementById("vida-mascota-jugador")
 const spanvidaMascotaEnemigo = document.getElementById("vida-mascota-enemigo")
 const contenedorTarjetas = document.getElementById("contenedor-tarjetas")
+const sectionVerMapa = document.getElementById("ver-mapa")
+const mapa = document.getElementById("mapa")
 
 let mascotaJudador
 let ataqueJugador
@@ -91,6 +93,7 @@ function iniciarJuego() {
     inputCapipepo = document.getElementById("Capipepo")
     inputRatigueya = document.getElementById("Ratigueya")
     sectionSeleccionarAtaque.style.display = "none"
+    sectionVerMapa.style.display = "none"
     sectionReiniciar.style.display = "none"
     btnMascotaJugador.addEventListener("click",seleccionarMascotaJugador)
     botonReiniciar.addEventListener("click",reiniciarJuego)
@@ -112,7 +115,8 @@ function seleccionarMascotaJugador(){
     if (inputHipodoge.checked || inputCapipepo.checked || inputRatigueya.checked) {
         extraerAtaques()
         seleccionarMascotaEnemigo()
-        sectionSeleccionarAtaque.style.display = "flex"
+        //sectionSeleccionarAtaque.style.display = "flex"
+        sectionVerMapa.style.display = "flex"
         sectionSeleccionarMascota.style.display = "none"
         /*botonFuego.addEventListener("click",ataqueFuego)
         botonAgua.addEventListener("click",ataqueAgua)
@@ -155,12 +159,15 @@ function secuenciaAtaque() {
             if (e.target.textContent === "Fuego 🔥") {
                 ataquesJugador.push("Fuego 🔥")
                 boton.style.background = "#112f58"
+                boton.disabled = true
             }else if(e.target.textContent === "Agua 💧"){
                 ataquesJugador.push("Agua 💧")
                 boton.style.background = "#112f58"
+                boton.disabled = true
             }else{
                 ataquesJugador.push("Tierra 🌿")
                 boton.style.background = "#112f58"
+                boton.disabled = true
             }
             if (ataquesJugador.length==5) {
                 ataqueEnemigoRandom()
@@ -185,22 +192,35 @@ function combate() {
     for (let i = 0; i < ataquesJugador.length; i++) {
         if (ataquesJugador[i] == randomAtaquesEnemigo[i]) {
             indexAmbosOponentes(i,i)
-            crearMensaje("EMPATE 🫱🫲")
-        }else if(ataquesJugador[i] == "ATAQUE 🔥" && randomAtaquesEnemigo[i] == "ATAQUE 🌿" || ataquesJugador[i] == "ATAQUE 🌿" && randomAtaquesEnemigo[i] == "ATAQUE 💧" || ataquesJugador[i] == "ATAQUE 💧" && randomAtaquesEnemigo[i] == "ATAQUE 🔥"){
+            crearMensaje("Empate")
+        }else if(ataquesJugador[i] == "Fuego 🔥" && randomAtaquesEnemigo[i] == "Tierra 🌿" || ataquesJugador[i] == "Tierra 🌿" && randomAtaquesEnemigo[i] == "Agua 💧" || ataquesJugador[i] == "Agua 💧" && randomAtaquesEnemigo[i] == "Fuego 🔥"){
             indexAmbosOponentes(i,i)
-            crearMensaje("GANASTE 🎉")
+            crearMensaje("Gana")
             contadorJugador+=1
         }else{
             indexAmbosOponentes(i,i)
-            crearMensaje("PERDISTE 😭")
+            crearMensaje("Pierde")
             contadorEnemigo+=1
         }
     }
     estadoVidas()
 }
+function indicadoresResultado(){
+
+}
 function crearMensaje(resultadoCombate) {
+    if (resultadoCombate == "Empate") {
+        indexAtaqueJugador = indexAtaqueJugador+" ⚠️"
+        indexAtaqueEnemigo = indexAtaqueEnemigo+" ⚠️"
+    }else if(resultadoCombate == "Gana"){
+        indexAtaqueJugador = indexAtaqueJugador+" ✅"
+        indexAtaqueEnemigo = indexAtaqueEnemigo+" ⛔"
+    }else if(resultadoCombate == "Pierde"){
+        indexAtaqueJugador = indexAtaqueJugador+" ⛔"
+        indexAtaqueEnemigo = indexAtaqueEnemigo+" ✅"
+    }
     let parrafoAtaqueJugador = document.createElement("p")
-    parrafoAtaqueJugador.innerHTML = indexAtaqueJugador
+    parrafoAtaqueJugador.innerHTML = indexAtaqueJugador+""
     mensajesJugador.appendChild(parrafoAtaqueJugador)
     
     let parrafoAtaqueEnemigo = document.createElement("p")
@@ -210,7 +230,11 @@ function crearMensaje(resultadoCombate) {
     mensajesResultado.innerHTML = resultadoCombate
 }
 function estadoVidas() {
-    if (contadorJugador > contadorEnemigo) {
+    spanMascotaJugador.innerHTML = contadorJugador
+    spanMascotaEnemigo.innerHTML = contadorEnemigo
+    if (contadorJugador == contadorEnemigo) {
+        mensajesResultado.innerHTML = "EMPATE EN LA PARTIDA"
+    }else if (contadorJugador > contadorEnemigo) {
         mensajesResultado.innerHTML = "FELICITACIONES, GANASTE LA PARTIDA"
     }else{
         mensajesResultado.innerHTML = "LO SIENTO, PERDISTE LA PARTIDA"
@@ -218,7 +242,7 @@ function estadoVidas() {
     botonFuego.disabled = true;
     botonAgua.disabled = true;
     botonTierra.disabled = true;
-    sectionReiniciar.style.display = "block";
+    sectionReiniciar.style.display = "flex";
 }
 function reiniciarJuego() {
     location.reload()
