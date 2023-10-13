@@ -18,7 +18,10 @@ let ataqueJugador
 let ataquesJugador = []
 let ataqueEnemigo
 let ataquesEnemigo = []
+let randomAtaquesEnemigo = []
 let mokepones = []
+let indexAtaqueJugador
+let indexAtaqueEnemigo
 let opcionDeMokepones
 let opcionAtaques
 let inputHipodoge
@@ -28,8 +31,8 @@ let botonFuego
 let botonAgua
 let botonTierra
 let botones
-let contadorJugador = 3
-let contadorEnemigo = 3
+let contadorJugador = 0
+let contadorEnemigo = 0
 class Mokepon{
     constructor(nombre, foto, vida){
         this.nombre = nombre
@@ -146,18 +149,6 @@ function seleccionarMascotaEnemigo() {
     ataquesEnemigo = mokepones[random].ataques
     secuenciaAtaque()
 }
-/*function ataqueFuego() {
-    ataqueJugador = "ATAQUE 🔥"
-    ataqueEnemigoRandom()
-}
-function ataqueAgua() {
-    ataqueJugador = "ATAQUE 💧"
-    ataqueEnemigoRandom()
-}
-function ataqueTierra() {
-    ataqueJugador = "ATAQUE 🌿"
-    ataqueEnemigoRandom()
-}*/
 function secuenciaAtaque() {
     botones.forEach((boton)=>{
         boton.addEventListener("click", (e) => {
@@ -171,59 +162,63 @@ function secuenciaAtaque() {
                 ataquesJugador.push("Tierra 🌿")
                 boton.style.background = "#112f58"
             }
+            if (ataquesJugador.length==5) {
+                ataqueEnemigoRandom()
+            }
         })
     })
-    ataqueEnemigoRandom()
 }
 function ataqueEnemigoRandom() {
-    let AuxAtaquesEnemigo = []
     ataquesEnemigo.sort(function() {
         return Math.random()-0.5
     })
     ataquesEnemigo.forEach((ataqueE)=>{
-        AuxAtaquesEnemigo.push(ataqueE.nombre)
+        randomAtaquesEnemigo.push(ataqueE.nombre)
     })
-    console.log(AuxAtaquesEnemigo)
     combate()
+}
+function indexAmbosOponentes(jugador, enemigo){
+    indexAtaqueJugador = ataquesJugador[jugador]
+    indexAtaqueEnemigo = randomAtaquesEnemigo[enemigo]
+}
+function combate() {
+    for (let i = 0; i < ataquesJugador.length; i++) {
+        if (ataquesJugador[i] == randomAtaquesEnemigo[i]) {
+            indexAmbosOponentes(i,i)
+            crearMensaje("EMPATE 🫱🫲")
+        }else if(ataquesJugador[i] == "ATAQUE 🔥" && randomAtaquesEnemigo[i] == "ATAQUE 🌿" || ataquesJugador[i] == "ATAQUE 🌿" && randomAtaquesEnemigo[i] == "ATAQUE 💧" || ataquesJugador[i] == "ATAQUE 💧" && randomAtaquesEnemigo[i] == "ATAQUE 🔥"){
+            indexAmbosOponentes(i,i)
+            crearMensaje("GANASTE 🎉")
+            contadorJugador+=1
+        }else{
+            indexAmbosOponentes(i,i)
+            crearMensaje("PERDISTE 😭")
+            contadorEnemigo+=1
+        }
+    }
+    estadoVidas()
 }
 function crearMensaje(resultadoCombate) {
     let parrafoAtaqueJugador = document.createElement("p")
-    parrafoAtaqueJugador.innerHTML = ataqueJugador
+    parrafoAtaqueJugador.innerHTML = indexAtaqueJugador
     mensajesJugador.appendChild(parrafoAtaqueJugador)
     
     let parrafoAtaqueEnemigo = document.createElement("p")
-    parrafoAtaqueEnemigo.innerHTML = ataqueEnemigo
+    parrafoAtaqueEnemigo.innerHTML = indexAtaqueEnemigo
     mensajesEnemigo.appendChild(parrafoAtaqueEnemigo)
     
     mensajesResultado.innerHTML = resultadoCombate
 }
 function estadoVidas() {
-    if(contadorJugador == 0 || contadorEnemigo == 0){
-        if (contadorJugador > contadorEnemigo) {
-            mensajesResultado.innerHTML = "FELICITACIONES, GANASTE LA PARTIDA"
-        }else{
-            mensajesResultado.innerHTML = "LO SIENTO, PERDISTE LA PARTIDA"
-        }
-        botonFuego.disabled = true;
-        botonAgua.disabled = true;
-        botonTierra.disabled = true;
-        sectionReiniciar.style.display = "block";
-    }
-}
-function combate() {
-    
-    if (ataqueJugador == ataqueEnemigo) {
-        crearMensaje("EMPATE 🫱🫲")
-    }else if(ataqueJugador == "ATAQUE 🔥" && ataqueEnemigo == "ATAQUE 🌿" || ataqueJugador == "ATAQUE 🌿" && ataqueEnemigo == "ATAQUE 💧" || ataqueJugador == "ATAQUE 💧" && ataqueEnemigo == "ATAQUE 🔥"){
-        contadorEnemigo -= 1
-        spanvidaMascotaEnemigo.innerHTML = contadorEnemigo 
-        crearMensaje("GANASTE 🎉")
+    if (contadorJugador > contadorEnemigo) {
+        mensajesResultado.innerHTML = "FELICITACIONES, GANASTE LA PARTIDA"
     }else{
-        contadorJugador -= 1
-        spanvidaMascotaJugador.innerHTML = contadorJugador
-        crearMensaje("PERDISTE 😭")
+        mensajesResultado.innerHTML = "LO SIENTO, PERDISTE LA PARTIDA"
     }
-    estadoVidas()
+    botonFuego.disabled = true;
+    botonAgua.disabled = true;
+    botonTierra.disabled = true;
+    sectionReiniciar.style.display = "block";
 }
 function reiniciarJuego() {
     location.reload()
