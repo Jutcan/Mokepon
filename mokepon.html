@@ -14,11 +14,17 @@
             
         </div>
         
-        <button id="btn-mascota">Seleccionar</button>
+        <button id="btn-mascota" class="botones">Seleccionar</button>
     </section>
     <section id="ver-mapa">
         <h1 class="titulo">Recorre el mapa con tu mokepon</h1>
         <canvas id="mapa"></canvas>
+        <section id="botonesMovimiento">
+            <button class="btn-move" id="arriba" onmouseup="detener()" onmousedown="moverArriba()" >↑</button>
+            <button class="btn-move" id="izquierda" onmouseup="detener()" onmousedown="moverIzquierda()">←</button>
+            <button class="btn-move" id="derecha" onmouseup="detener()" onmousedown="moverDerecha()">→</button>
+            <button class="btn-move" id="abajo" onmouseup="detener()" onmousedown="moverAbajo()">↓</button>
+        </section>
     </section>
     <section id="seleccionar-ataque">
         <h1>BATALLA MOKEPON!</h1>
