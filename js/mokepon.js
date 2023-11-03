@@ -16,6 +16,7 @@ const sectionVerMapa = document.getElementById("ver-mapa")
 const mapa = document.getElementById("mapa")
 
 let jugadorId = null
+let enemigoId= null
 let idMascotaJugador
 let ataqueJugador
 let ataquesJugador = []
@@ -23,6 +24,7 @@ let ataqueEnemigo
 let ataquesEnemigo = []
 let randomAtaquesEnemigo = []
 let mokepones = []
+let mokeponesEnemigo = []
 let indexAtaqueJugador
 let indexAtaqueEnemigo
 let opcionDeMokepones
@@ -82,11 +84,7 @@ class Mokepon{
 let hipodoge = new Mokepon("Hipodoge", "img/hipodoge.png", 3, "img/minhipodoge.png")
 let capipepo = new Mokepon("Capipepo", "img/capipepo.png", 4, "img/mincapipepo.png")
 let ratigueya = new Mokepon("Ratigueya", "img/ratigueya.png", 2, "img/minratigueya.png")
-let hipodogeEnemigo = new Mokepon("Hipodoge", "img/hipodoge.png", 3, "img/minhipodoge.png")
-let capipepoEnemigo = new Mokepon("Capipepo", "img/capipepo.png", 4, "img/mincapipepo.png")
-let ratigueyaEnemigo = new Mokepon("Ratigueya", "img/ratigueya.png", 2, "img/minratigueya.png")
 
-mokepones.push(hipodoge, capipepo, ratigueya)
 // 🔥💧🌿
 const HIPODOGE_ATAQUES = [
     { nombre: "Agua 💧", id: "btn-agua" },
@@ -112,9 +110,7 @@ const RATIGUEYA_ATAQUES = [
 hipodoge.ataques.push(...HIPODOGE_ATAQUES)
 capipepo.ataques.push(...CAPIPEPO_ATAQUES)
 ratigueya.ataques.push(...RATIGUEYA_ATAQUES)
-hipodogeEnemigo.ataques.push(...HIPODOGE_ATAQUES)
-capipepoEnemigo.ataques.push(...CAPIPEPO_ATAQUES)
-ratigueyaEnemigo.ataques.push(...RATIGUEYA_ATAQUES)
+mokepones.push(hipodoge, capipepo, ratigueya)
 
 function aleatorio(max) {
     return Math.round(Math.random()*(max-1)+1)
@@ -178,7 +174,7 @@ function seleccionarMascotaJugador(){
     }
 }
 function seleccionarMokepon(idMascotaJugador) {
-    fetch(`http://localhost:8080/mokepon/${jugadorId}`, {
+    fetch(`http://localhost:8080/Mokepon/${jugadorId}`, {
         method: "post",
         headers: {
             "Content-Type": "application/json"
@@ -231,10 +227,36 @@ function secuenciaAtaque() {
                 boton.disabled = true
             }
             if (ataquesJugador.length==5) {
-                ataqueEnemigoRandom()
+                enviarAtaques()
             }
         })
     })
+}
+function enviarAtaques() {
+    fetch("http://localhost:8080/Mokepon/"+jugadorId+"/ataques",{
+        method: "post",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            ataques: ataquesJugador
+        })
+    })
+    intervalo = setInterval(obtenerAtaques, 50)
+}
+function obtenerAtaques() {
+    fetch("http://localhost:8080/Mokepon/"+enemigoId+"/ataques")
+        .then(function (res){
+            if (res.ok) {
+                res.json()
+                    .then(function ({ ataques }){
+                        if(ataques.length === 5){
+                            ataqueEnemigo = ataques
+                            combate()
+                        }
+                    })
+            }
+        })
 }
 function ataqueEnemigoRandom() {
     ataquesEnemigo.sort(function() {
@@ -250,6 +272,7 @@ function indexAmbosOponentes(jugador, enemigo){
     indexAtaqueEnemigo = randomAtaquesEnemigo[enemigo]
 }
 function combate() {
+    clearInterval(intervalo)
     for (let i = 0; i < ataquesJugador.length; i++) {
         if (ataquesJugador[i] == randomAtaquesEnemigo[i]) {
             indexAmbosOponentes(i,i)
@@ -346,17 +369,13 @@ function pintarCanvas(){
     )
     mokeponJugador.pintarMokepon()
     enviarPosicion(mokeponJugador.x, mokeponJugador.y)
-    hipodogeEnemigo.pintarMokepon()
-    capipepoEnemigo.pintarMokepon()
-    ratigueyaEnemigo.pintarMokepon()
-    if (mokeponJugador.velocidadX != 0 || mokeponJugador.velocidadY != 0) {
-        revisarColision(hipodogeEnemigo)
-        revisarColision(capipepoEnemigo)
-        revisarColision(ratigueyaEnemigo)
-    }
+    mokeponesEnemigo.forEach(function (mokepon) {
+        mokepon.pintarMokepon()
+        revisarColision(mokepon)
+    })
 }
 function enviarPosicion(x,y) {
-    fetch("http://localhost:8080/mokepon/"+jugadorId+"/posicion", {
+    fetch("http://localhost:8080/Mokepon/"+jugadorId+"/posicion", {
         method : "post",
         headers : {
             "Content-Type": "application/json"
@@ -369,20 +388,20 @@ function enviarPosicion(x,y) {
     .then(function(res){
         if (res.ok) {
             res.json()
-                .then(function ({enemigos}){
-                    enemigos.forEach((enemigo)=>{
+                .then(function ({ enemigos }){
+                    mokeponesEnemigo = enemigos.map(function (enemigo) {
                         let mokeponEnemigo = null
                         const mokeponNombre = enemigo.mokepon.nombre || ""
                         if(mokeponNombre === "Hipodoge"){
-                            mokeponEnemigo = new Mokepon("Hipodoge", "img/hipodoge.png", 3, "img/minhipodoge.png")
+                            mokeponEnemigo = new Mokepon("Hipodoge", "img/hipodoge.png", 3, "img/minhipodoge.png", enemigo.id)
                         }else if(mokeponNombre === "Capipepo"){
-                            mokeponEnemigo = new Mokepon("Capipepo", "img/capipepo.png", 4, "img/mincapipepo.png")
+                            mokeponEnemigo = new Mokepon("Capipepo", "img/capipepo.png", 4, "img/mincapipepo.png", enemigo.id)
                         }else if(mokeponNombre === "Ratigueya"){
-                            mokeponEnemigo = new Mokepon("Ratigueya", "img/ratigueya.png", 2, "img/minratigueya.png")
+                            mokeponEnemigo = new Mokepon("Ratigueya", "img/ratigueya.png", 2, "img/minratigueya.png", enemigo.id)
                         }
                         mokeponEnemigo.x = enemigo.x
                         mokeponEnemigo.y = enemigo.y
-                        mokeponEnemigo.pintarMokepon()
+                        return mokeponEnemigo
                     })
                 })
         }
@@ -422,7 +441,8 @@ function revisarColision(enemigo) {
         return
     }
     detener()
-    alert("Hay colisión con "+enemigo.nombre)
+    clearInterval(intervalo)
+    enemigoId = enemigo.id
     sectionVerMapa.style.display = "none"
     sectionSeleccionarAtaque.style.display = "flex"
     seleccionarMascotaEnemigo(enemigo)
